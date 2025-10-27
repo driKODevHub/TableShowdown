@@ -391,7 +391,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.4108752, y: -0.32121453, z: 0.15738206, w: 0.8385903}
+  m_LocalRotation: {x: 0.41085675, y: -0.32135862, z: 0.15745692, w: 0.8385301}
   m_LocalPosition: {x: 47.01, y: 92.14, z: -52.36}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -789,68 +789,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &877162364
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 57827257445729946, guid: 0672f950e127fd64d862caf0b505fdf1, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 57827257445729946, guid: 0672f950e127fd64d862caf0b505fdf1, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 57827257445729946, guid: 0672f950e127fd64d862caf0b505fdf1, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -15.57649
-      objectReference: {fileID: 0}
-    - target: {fileID: 57827257445729946, guid: 0672f950e127fd64d862caf0b505fdf1, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 57827257445729946, guid: 0672f950e127fd64d862caf0b505fdf1, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 57827257445729946, guid: 0672f950e127fd64d862caf0b505fdf1, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 57827257445729946, guid: 0672f950e127fd64d862caf0b505fdf1, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 57827257445729946, guid: 0672f950e127fd64d862caf0b505fdf1, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 57827257445729946, guid: 0672f950e127fd64d862caf0b505fdf1, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 57827257445729946, guid: 0672f950e127fd64d862caf0b505fdf1, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8109729568435563452, guid: 0672f950e127fd64d862caf0b505fdf1, type: 3}
-      propertyPath: m_Name
-      value: Coin
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 0672f950e127fd64d862caf0b505fdf1, type: 3}
---- !u!1 &877162365 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8109729568435563452, guid: 0672f950e127fd64d862caf0b505fdf1, type: 3}
-  m_PrefabInstance: {fileID: 877162364}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &980629776
 GameObject:
   m_ObjectHideFlags: 0
@@ -1141,6 +1079,40 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8119140634421905806, guid: d9a231df7003ffd4688c25c36b65c296, type: 3}
   m_PrefabInstance: {fileID: 1724796185}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1258082176 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8119140634421905812, guid: d9a231df7003ffd4688c25c36b65c296, type: 3}
+  m_PrefabInstance: {fileID: 1724796185}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1258082180 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8119140634421905800, guid: d9a231df7003ffd4688c25c36b65c296, type: 3}
+  m_PrefabInstance: {fileID: 1724796185}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1258082176}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2d69c44041501f4aab1c355410d67b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1258082183
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1258082176}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 286ea684675bc8340915e4368aa48050, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerResourceController
+  arcadeVehicleController: {fileID: 1258082180}
+  maxFuel: 10
+  fuelConsumptionRate: 0.5
+  maxBoost: 100
+  boostConsumptionRate: 10
+  boostMultiplier: 1.75
 --- !u!1 &1273244786
 GameObject:
   m_ObjectHideFlags: 0
@@ -1573,6 +1545,7 @@ GameObject:
   - component: {fileID: 1495054898}
   - component: {fileID: 1495054897}
   - component: {fileID: 1495054895}
+  - component: {fileID: 1495054899}
   m_Layer: 0
   m_Name: CinemachineCamera
   m_TagString: Untagged
@@ -1593,7 +1566,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineRotationComposer
   Composition:
-    ScreenPosition: {x: 0, y: 0}
+    ScreenPosition: {x: 0.0005208254, y: 0}
     DeadZone:
       Enabled: 1
       Size: {x: 0.7, y: 0.7}
@@ -1606,8 +1579,8 @@ MonoBehaviour:
   Damping: {x: 0.5, y: 0.5}
   Lookahead:
     Enabled: 1
-    Time: 0.5
-    Smoothing: 5.62
+    Time: 0.65
+    Smoothing: 5
     IgnoreY: 0
 --- !u!114 &1495054897
 MonoBehaviour:
@@ -1660,13 +1633,30 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1495054894}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.4108752, y: -0.32121447, z: 0.15738201, w: 0.8385904}
+  m_LocalRotation: {x: 0.41085675, y: -0.3213586, z: 0.15745687, w: 0.8385301}
   m_LocalPosition: {x: 47.01, y: 92.14, z: -52.36}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1495054899
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1495054894}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68bb026fafb42b14791938953eaace77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineBasicMultiChannelPerlin
+  NoiseProfile: {fileID: 11400000, guid: 8608ec81ee27a15488d33f9dad239e91, type: 2}
+  PivotOffset: {x: 0, y: 0, z: 0}
+  AmplitudeGain: 0.1
+  FrequencyGain: 1
+  m_NoiseOffsets: {x: 0, y: 0, z: 0}
 --- !u!1 &1513203408
 GameObject:
   m_ObjectHideFlags: 0
@@ -2322,7 +2312,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8119140634421905812, guid: d9a231df7003ffd4688c25c36b65c296, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1258082183}
   m_SourcePrefab: {fileID: 100100000, guid: d9a231df7003ffd4688c25c36b65c296, type: 3}
 --- !u!1 &1825978503
 GameObject:
@@ -2476,7 +2469,7 @@ GameObject:
   - component: {fileID: 1890314218}
   - component: {fileID: 1890314217}
   m_Layer: 0
-  m_Name: '[CoinSpawnManager]'
+  m_Name: '[PickupSpawnManager]'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2494,8 +2487,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9330fdb7ee0602a43b798f923da1004a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CoinSpawner
-  coinPrefab: {fileID: 877162365}
-  spawnBoundBoxSize: {x: 100, y: 1, z: 100}
+  playerTransform: {fileID: 1197772289}
+  spawnBoundBoxSize: {x: 60, y: 1, z: 40}
+  spawnCheckInterval: 1
+  itemsToSpawn:
+  - name: Coin
+    prefab: {fileID: 8109729568435563452, guid: 0672f950e127fd64d862caf0b505fdf1, type: 3}
+    maxConcurrentCount: 1
+    minRespawnDistance: 5
+    currentCount: 0
+    lastSpawnPosition: {x: 0, y: 0, z: 0}
+  - name: Fuel
+    prefab: {fileID: 8109729568435563452, guid: 717e0486826f251418e724d7db80b820, type: 3}
+    maxConcurrentCount: 5
+    minRespawnDistance: 15
+    currentCount: 0
+    lastSpawnPosition: {x: 0, y: 0, z: 0}
+  - name: TurboBoost
+    prefab: {fileID: 8109729568435563452, guid: 8d6c790f5b7356e4e9d225c35fcc08cb, type: 3}
+    maxConcurrentCount: 3
+    minRespawnDistance: 10
+    currentCount: 0
+    lastSpawnPosition: {x: 0, y: 0, z: 0}
 --- !u!4 &1890314218
 Transform:
   m_ObjectHideFlags: 0
@@ -3081,4 +3094,3 @@ SceneRoots:
   - {fileID: 1724796185}
   - {fileID: 322160727}
   - {fileID: 1890314218}
-  - {fileID: 877162364}
