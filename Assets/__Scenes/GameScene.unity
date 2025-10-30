@@ -9900,6 +9900,10 @@ PrefabInstance:
       value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 8119140634421905800, guid: d9a231df7003ffd4688c25c36b65c296, type: 3}
+      propertyPath: BodyTilt
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8119140634421905800, guid: d9a231df7003ffd4688c25c36b65c296, type: 3}
       propertyPath: MaxSpeed
       value: 150
       objectReference: {fileID: 0}
@@ -9918,6 +9922,14 @@ PrefabInstance:
     - target: {fileID: 8119140634421905800, guid: d9a231df7003ffd4688c25c36b65c296, type: 3}
       propertyPath: carVelocity.z
       value: 29.187428
+      objectReference: {fileID: 0}
+    - target: {fileID: 8119140634421905800, guid: d9a231df7003ffd4688c25c36b65c296, type: 3}
+      propertyPath: maxBrakingPitch
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 8119140634421905800, guid: d9a231df7003ffd4688c25c36b65c296, type: 3}
+      propertyPath: maxAccelerationPitch
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 8119140634421905801, guid: d9a231df7003ffd4688c25c36b65c296, type: 3}
       propertyPath: m_Mass

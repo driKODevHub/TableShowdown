@@ -35,7 +35,28 @@ namespace ArcadeVP
         public Vector3 carVelocity;
 
         [Range(0, 10)]
-        public float BodyTilt;
+        public float BodyTilt; // Нахил вліво/вправо
+
+        // --- ОНОВЛЕНІ НАЛАШТУВАННЯ ТІЛЬТУ ---
+        [Header("Advanced Tilt Settings")]
+        [Tooltip("Сила нахилу (назад) при прискоренні.")]
+        public float accelerationTiltStrength = 1.3f; // Було 2.5
+        [Tooltip("Сила нахилу (вперед) при АКТИВНОМУ гальмуванні (S або Space).")]
+        public float brakingTiltStrength = 1.5f; // Було 3.0
+        [Tooltip("НОВЕ: Сила нахилу (вперед) при пасивному сповільненні (коли відпустили газ).")]
+        public float passiveDecelerationTiltStrength = 0.3f; // Нове поле
+        [Tooltip("Додатковий множник сили при прискоренні з нітро.")]
+        public float boostTiltMultiplier = 1.4f; // Було 1.75
+        [Tooltip("Максимальний кут нахилу назад (прискорення) в градусах.")]
+        public float maxAccelerationPitch = 4f; // Було 8
+        [Tooltip("Максимальний кут нахилу вперед (гальмування) в градусах.")]
+        public float maxBrakingPitch = 5f; // Було 10
+        [Tooltip("Швидкість, з якою кузов нахиляється до цільової позиції.")]
+        public float tiltSmoothSpeed = 7f;
+        [Tooltip("Швидкість, з якою кузов повертається у 0 (стабілізується).")]
+        public float stabilizationSmoothSpeed = 5f;
+        // --- КІНЕЦЬ ОНОВЛЕНИХ НАЛАШТУВАНЬ ---
+
         [Header("Audio settings")]
         public AudioSource engineSound;
         [Range(0, 1)]
@@ -51,12 +72,30 @@ namespace ArcadeVP
         private float radius, steeringInput, accelerationInput, brakeInput;
         private Vector3 origin;
 
+        private PlayerResourceController playerResources;
+        private float previousForwardSpeed = 0f;
+        private float targetPitch = 0f;
+        private float targetRoll = 0f;
+        private float currentPitch = 0f;
+        private float currentRoll = 0f;
+        private Quaternion initialBodyMeshRotation;
+
         private void Start()
         {
             radius = rb.GetComponent<SphereCollider>().radius;
             if (movementMode == MovementMode.AngularVelocity)
             {
                 Physics.defaultMaxAngularSpeed = 100;
+            }
+
+            playerResources = GetComponent<PlayerResourceController>();
+            if (playerResources == null)
+            {
+                Debug.LogWarning("ArcadeVehicleController: PlayerResourceController не знайдено. Нахил від нітро не працюватиме.");
+            }
+            if (BodyMesh != null)
+            {
+                initialBodyMeshRotation = BodyMesh.localRotation;
             }
         }
 
@@ -93,7 +132,6 @@ namespace ArcadeVP
 
             if (Mathf.Abs(carVelocity.x) > 0)
             {
-                //changes friction according to sideways speed of car
                 frictionMaterial.dynamicFriction = frictionCurve.Evaluate(Mathf.Abs(carVelocity.x / 100));
             }
 
@@ -103,7 +141,7 @@ namespace ArcadeVP
                 //turnlogic
                 float sign = Mathf.Sign(carVelocity.z);
                 float TurnMultiplyer = turnCurve.Evaluate(carVelocity.magnitude / MaxSpeed);
-                if (kartLike && brakeInput > 0.1f) { TurnMultiplyer *= driftMultiplier; } //turn more if drifting
+                if (kartLike && brakeInput > 0.1f) { TurnMultiplyer *= driftMultiplier; }
 
 
                 if (accelerationInput > 0.1f || carVelocity.z > 1)
@@ -114,8 +152,6 @@ namespace ArcadeVP
                 {
                     carBody.AddTorque(Vector3.up * steeringInput * sign * turn * 100 * TurnMultiplyer);
                 }
-
-
 
                 // mormal brakelogic
                 if (!kartLike)
@@ -131,7 +167,6 @@ namespace ArcadeVP
                 }
 
                 //accelaration logic
-
                 if (movementMode == MovementMode.AngularVelocity)
                 {
                     if (Mathf.Abs(accelerationInput) > 0.1f && brakeInput < 0.1f && !kartLike)
@@ -155,27 +190,58 @@ namespace ArcadeVP
                     }
                 }
 
-                // down froce
                 rb.AddForce(-transform.up * downforce * rb.mass);
-
-                //body tilt
                 carBody.MoveRotation(Quaternion.Slerp(carBody.rotation, Quaternion.FromToRotation(carBody.transform.up, hit.normal) * carBody.transform.rotation, 0.12f));
+
+                CalculateBodyPitch();
             }
             else
             {
                 if (AirControl)
                 {
-                    //turnlogic
                     float TurnMultiplyer = turnCurve.Evaluate(carVelocity.magnitude / MaxSpeed);
-
                     carBody.AddTorque(Vector3.up * steeringInput * turn * 100 * TurnMultiplyer);
                 }
 
                 carBody.MoveRotation(Quaternion.Slerp(carBody.rotation, Quaternion.FromToRotation(carBody.transform.up, Vector3.up) * carBody.transform.rotation, 0.02f));
                 rb.linearVelocity = Vector3.Lerp(rb.linearVelocity, rb.linearVelocity + Vector3.down * gravity, Time.deltaTime * gravity);
+
+                targetPitch = 0f;
             }
 
+            previousForwardSpeed = carVelocity.z;
         }
+
+        // --- ОНОВЛЕНИЙ МЕТОД РОЗРАХУНКУ НАХИЛУ ---
+        private void CalculateBodyPitch()
+        {
+            float currentForwardSpeed = carVelocity.z;
+            float acceleration = (currentForwardSpeed - previousForwardSpeed) / Time.fixedDeltaTime;
+
+            bool isBoosting = (playerResources != null && playerResources.IsBoosting);
+            bool isActivelyBraking = (brakeInput > 0.1f || accelerationInput < -0.1f);
+
+            if (acceleration > 0.1f) // Прискорення
+            {
+                float multiplier = isBoosting ? boostTiltMultiplier : 1.0f;
+                float tilt = -acceleration * accelerationTiltStrength * multiplier;
+                float maxPitch = maxAccelerationPitch * (isBoosting ? boostTiltMultiplier : 1.0f);
+                targetPitch = Mathf.Clamp(tilt, -maxPitch, 0f);
+            }
+            else if (acceleration < -0.1f) // Сповільнення (будь-яке)
+            {
+                float tiltStrength = isActivelyBraking ? brakingTiltStrength : passiveDecelerationTiltStrength;
+                float tilt = -acceleration * tiltStrength;
+                targetPitch = Mathf.Clamp(tilt, 0f, maxBrakingPitch);
+            }
+            else
+            {
+                // Стабілізація
+                targetPitch = 0f;
+            }
+        }
+        // --- КІНЕЦЬ ОНОВЛЕНОГО МЕТОДУ ---
+
         public void Visuals()
         {
             //tires
@@ -188,17 +254,15 @@ namespace ArcadeVP
             RearWheels[0].localRotation = rb.transform.localRotation;
             RearWheels[1].localRotation = rb.transform.localRotation;
 
-            //Body
+            // Розрахунок нахилу вліво/вправо
             if (carVelocity.z > 1)
             {
-                BodyMesh.localRotation = Quaternion.Slerp(BodyMesh.localRotation, Quaternion.Euler(Mathf.Lerp(0, -5, carVelocity.z / MaxSpeed),
-                                   BodyMesh.localRotation.eulerAngles.y, BodyTilt * steeringInput), 0.4f * Time.deltaTime / Time.fixedDeltaTime);
+                targetRoll = BodyTilt * steeringInput;
             }
             else
             {
-                BodyMesh.localRotation = Quaternion.Slerp(BodyMesh.localRotation, Quaternion.Euler(0, 0, 0), 0.4f * Time.deltaTime / Time.fixedDeltaTime);
+                targetRoll = 0f;
             }
-
 
             if (kartLike)
             {
@@ -214,12 +278,25 @@ namespace ArcadeVP
                     Quaternion.Euler(0, 0, 0),
                     0.1f * Time.deltaTime / Time.fixedDeltaTime);
                 }
-
             }
-
         }
 
-        public bool grounded() //checks for if vehicle is grounded or not
+        private void LateUpdate()
+        {
+            if (BodyMesh == null) return;
+
+            // Плавно рухаємо поточний нахил (Pitch) до цільового
+            float pitchSpeed = (Mathf.Abs(targetPitch) > 0.01f) ? tiltSmoothSpeed : stabilizationSmoothSpeed;
+            currentPitch = Mathf.Lerp(currentPitch, targetPitch, pitchSpeed * Time.deltaTime);
+
+            // Плавно рухаємо поточний нахил (Roll) до цільового
+            float rollSpeed = (Mathf.Abs(targetRoll) > 0.01f) ? tiltSmoothSpeed : stabilizationSmoothSpeed;
+            currentRoll = Mathf.Lerp(currentRoll, targetRoll, rollSpeed * Time.deltaTime);
+
+            BodyMesh.localRotation = initialBodyMeshRotation * Quaternion.Euler(currentPitch, 0, currentRoll);
+        }
+
+        public bool grounded()
         {
             origin = rb.position + rb.GetComponent<SphereCollider>().radius * Vector3.up;
             var direction = -transform.up;
@@ -236,13 +313,11 @@ namespace ArcadeVP
                     return false;
                 }
             }
-
             else if (GroundCheck == groundCheck.sphereCaste)
             {
                 if (Physics.SphereCast(origin, radius + 0.1f, direction, out hit, maxdistance, drivableSurface))
                 {
                     return true;
-
                 }
                 else
                 {
@@ -254,7 +329,6 @@ namespace ArcadeVP
 
         private void OnDrawGizmos()
         {
-            //debug gizmos
             radius = rb.GetComponent<SphereCollider>().radius;
             float width = 0.02f;
             if (!Application.isPlaying)
@@ -266,10 +340,7 @@ namespace ArcadeVP
                     Gizmos.color = Color.green;
                     Gizmos.DrawWireCube(transform.position, GetComponent<BoxCollider>().size);
                 }
-
             }
-
         }
-
     }
 }
