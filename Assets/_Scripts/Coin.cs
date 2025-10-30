@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Coin : MonoBehaviour
 {
-    [SerializeField] private int scoreValue = 1; // Можеш додати вартість монетки, якщо знадобиться
+    [SerializeField] private int scoreValue = 1; // Можеш додати вартість монетки, якщо знадобиться 
     [SerializeField] private GameObject pickupEffect; // Ефект (партікли, звук) при підборі
 
     private void OnTriggerEnter(Collider other)

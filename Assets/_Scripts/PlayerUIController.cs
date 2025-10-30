@@ -37,10 +37,8 @@ public class PlayerUIController : MonoBehaviour
         }
 
         // --- Отримуємо компоненти для прямого доступу ---
-        // Ми перевіряємо, чи є у прогрес-барів прив'язані смужки
         if (boostBar != null && boostBar.ForegroundBar != null)
         {
-            // Намагаємось отримати Image, якщо FillMode - це FillAmount
             _boostForegroundImage = boostBar.ForegroundBar.GetComponent<Image>();
         }
         if (fuelBar != null && fuelBar.ForegroundBar != null)
@@ -48,11 +46,11 @@ public class PlayerUIController : MonoBehaviour
             _fuelForegroundImage = fuelBar.ForegroundBar.GetComponent<Image>();
         }
 
-        // --- Підписуємось на подію ---
+        // --- Підписуємось на події ---
         playerResources.OnBoostAdded.AddListener(HandleBoostAdded);
+        playerResources.OnFuelAdded.AddListener(HandleFuelAdded); // <--- НОВЕ: Підписка на подію палива
 
         // --- Ініціалізуємо бари ---
-        // Це спрацює коректно, бо PlayerResourceController виконав Awake()
         InitializeBars();
     }
 
@@ -61,6 +59,7 @@ public class PlayerUIController : MonoBehaviour
         if (playerResources != null)
         {
             playerResources.OnBoostAdded.RemoveListener(HandleBoostAdded);
+            playerResources.OnFuelAdded.RemoveListener(HandleFuelAdded); // <--- НОВЕ: Відписка
         }
     }
 
@@ -85,13 +84,12 @@ public class PlayerUIController : MonoBehaviour
 
     void Update()
     {
-        // Обидва методи тепер використовують прямий доступ
         UpdateFuelBar();
         UpdateBoostBarLogic();
     }
 
     /// <summary>
-    /// ВИКЛИКАЄТЬСЯ ПОДІЄЮ: Коли підібрали пікап
+    /// ВИКЛИКАЄТЬСЯ ПОДІЄЮ: Коли підібрали нітро
     /// </summary>
     public void HandleBoostAdded()
     {
@@ -103,7 +101,19 @@ public class PlayerUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// ВИКЛИКАЄТЬСЯ В UPDATE: Вся логіка "спалювання" та "наздоганяння"
+    /// НОВИЙ МЕТОД - ВИКЛИКАЄТЬСЯ ПОДІЄЮ: Коли підібрали паливо
+    /// </summary>
+    public void HandleFuelAdded()
+    {
+        if (fuelBar != null)
+        {
+            // Використовуємо UpdateBar, щоб запустити "бамп"
+            fuelBar.UpdateBar(playerResources.CurrentFuel, 0f, playerResources.MaxFuel);
+        }
+    }
+
+    /// <summary>
+    /// ВИКЛИКАЄТЬСЯ В UPDATE: Вся логіка "спалювання" та "наздоганяння" нітро
     /// </summary>
     private void UpdateBoostBarLogic()
     {
@@ -139,39 +149,26 @@ public class PlayerUIController : MonoBehaviour
     /// </summary>
     private void UpdateFuelBar()
     {
+        // ОНОВЛЕНО: Ми більше не використовуємо ручний метод ManuallySetBarFill
+        // за твоїм проханням ("апдейтити всі бари одночано").
+        // Ми викликаємо SetBar, який миттєво оновить ВСІ смужки (білу, червону)
+        // до нового значення без "бампу". Це ідеально для спалювання.
         if (fuelBar != null)
         {
-            float normalizedFuel = 0f;
-            if (playerResources.MaxFuel > 0)
-            {
-                normalizedFuel = playerResources.CurrentFuel / playerResources.MaxFuel;
-            }
-
-            // Паливо теж спалюється плавно, тому використовуємо той самий ручний метод
-            ManuallySetBarFill(fuelBar, _fuelForegroundImage, normalizedFuel);
-
+            fuelBar.SetBar(playerResources.CurrentFuel, 0f, playerResources.MaxFuel);
             UpdateFuelText();
         }
     }
 
     /// <summary>
-    /// Наш власний "тихий" метод, який рухає ТІЛЬКИ передню смужку
+    /// Наш власний "тихий" метод, який рухає ТІЛЬКИ передню смужку (ДЛЯ НІТРО)
     /// </summary>
     private void ManuallySetBarFill(MoreMountains.Tools.MMProgressBar bar, Image foregroundImage, float normalizedValue)
     {
-        // Перевіряємо, чи є взагалі передня смужка
         if (bar.ForegroundBar == null) return;
 
-        // ВИПРАВЛЕНО: 'MMTween.Remap' не існує, 'StartValue'/'EndValue' - неправильні назви.
-        // Ми робимо математичний Remap вручну, використовуючи ПРАВИЛЬНІ назви полів 
-        // з твого скріншота (MinimumBarFillValue та MaximumBarFillValue).
-
-        // Remap(x, A, B, C, D) = C + (x - A) / (B - A) * (D - C)
-        // x = normalizedValue, A = 0, B = 1, C = bar.MinimumBarFillValue, D = bar.MaximumBarFillValue
-        // Спрощується до:
         float remappedValue = bar.MinimumBarFillValue + normalizedValue * (bar.MaximumBarFillValue - bar.MinimumBarFillValue);
 
-        // Рухаємо смужку залежно від її FillMode
         switch (bar.FillMode)
         {
             case MoreMountains.Tools.MMProgressBar.FillModes.LocalScale:
@@ -182,13 +179,13 @@ public class PlayerUIController : MonoBehaviour
                         newScale.y = remappedValue;
                         break;
                     case MoreMountains.Tools.MMProgressBar.BarDirections.UpToDown:
-                        newScale.y = 1f - remappedValue; // Або remappedValue, залежно від Pivota
+                        newScale.y = 1f - remappedValue;
                         break;
                     case MoreMountains.Tools.MMProgressBar.BarDirections.LeftToRight:
                         newScale.x = remappedValue;
                         break;
                     case MoreMountains.Tools.MMProgressBar.BarDirections.RightToLeft:
-                        newScale.x = 1f - remappedValue; // Або remappedValue, залежно від Pivota
+                        newScale.x = 1f - remappedValue;
                         break;
                 }
                 bar.ForegroundBar.localScale = newScale;
@@ -200,8 +197,6 @@ public class PlayerUIController : MonoBehaviour
                     foregroundImage.fillAmount = remappedValue;
                 }
                 break;
-
-                // Тут можна додати логіку для Width, Height, Anchor, якщо потрібно
         }
     }
 
