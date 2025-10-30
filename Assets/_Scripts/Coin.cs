@@ -2,8 +2,27 @@ using UnityEngine;
 
 public class Coin : MonoBehaviour
 {
-    [SerializeField] private int scoreValue = 1; // Можеш додати вартість монетки, якщо знадобиться 
-    [SerializeField] private GameObject pickupEffect; // Ефект (партікли, звук) при підборі
+    [SerializeField] private int scoreValue = 1;
+    [SerializeField] private GameObject pickupEffect;
+
+    // РЕЄСТРАЦІЯ в менеджері при появі на сцені
+    private void Start()
+    {
+        if (CoinManager.Instance != null)
+        {
+            CoinManager.Instance.RegisterCoin(this);
+        }
+    }
+
+    // ДЕРЕЄСТРАЦІЯ перед знищенням
+    private void OnDestroy()
+    {
+        // Переконуємось, що Instance ще існує (наприклад, при закритті сцени)
+        if (CoinManager.Instance != null)
+        {
+            CoinManager.Instance.DeregisterCoin(this);
+        }
+    }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -12,14 +31,14 @@ public class Coin : MonoBehaviour
             // Тут ти можеш додати логіку нарахування очок гравцю, наприклад:
             // ScoreManager.Instance.AddScore(scoreValue);
 
-            // Якщо є ефект, створюємо його
             if (pickupEffect != null)
             {
                 Instantiate(pickupEffect, transform.position, Quaternion.identity);
             }
 
-            // Просто знищуємо монету. 
-            // Скрипт ManagedPickup.cs автоматично повідомить менеджер.
+            // Просто знищуємо монету.
+            // Скрипт ManagedPickup.cs автоматично повідомить спавн-менеджер,
+            // а наш новий метод OnDestroy() повідомить CoinManager.
             Destroy(gameObject);
         }
     }
