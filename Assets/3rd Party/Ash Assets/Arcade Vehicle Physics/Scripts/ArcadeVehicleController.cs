@@ -12,7 +12,17 @@ namespace ArcadeVP
         public groundCheck GroundCheck;
         public LayerMask drivableSurface;
 
-        public float MaxSpeed, accelaration, turn, gravity = 7f, downforce = 5f;
+        [Header("Physics Settings")]
+        public float MaxSpeed;
+        public float accelaration;
+        public float turn;
+        public float gravity = 7f;
+        public float downforce = 5f;
+
+        [Header("Braking")]
+        [Tooltip("Сила гальмування при натисканні 'Space' (коли kartLike = false). 1 = слабко, 5 = дуже різко.")]
+        public float brakeForce = 2.5f; // <--- НОВЕ ПОЛЕ
+
         [Tooltip("if true : can turn vehicle in air")]
         public bool AirControl = false;
         [Tooltip("if true : vehicle will drift instead of brake while holding space")]
@@ -159,6 +169,19 @@ namespace ArcadeVP
                     if (brakeInput > 0.1f)
                     {
                         rb.constraints = RigidbodyConstraints.FreezeRotationX;
+
+                        // --- ОНОВЛЕНА ЛОГІКА ГАЛЬМУВАННЯ ---
+                        // Активно гасимо швидкість, а не просто чекаємо тертя
+                        if (movementMode == MovementMode.Velocity)
+                        {
+                            rb.linearVelocity = Vector3.Lerp(rb.linearVelocity, Vector3.zero, brakeForce * Time.deltaTime);
+                        }
+                        else // AngularVelocity
+                        {
+                            rb.linearVelocity = Vector3.Lerp(rb.linearVelocity, Vector3.zero, brakeForce * Time.deltaTime);
+                            rb.angularVelocity = Vector3.Lerp(rb.angularVelocity, Vector3.zero, brakeForce * Time.deltaTime);
+                        }
+                        // --- КІНЕЦЬ ОНОВЛЕНОЇ ЛОГІКИ ---
                     }
                     else
                     {
@@ -340,6 +363,7 @@ namespace ArcadeVP
                     Gizmos.color = Color.green;
                     Gizmos.DrawWireCube(transform.position, GetComponent<BoxCollider>().size);
                 }
+
             }
         }
     }

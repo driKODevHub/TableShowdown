@@ -98,10 +98,28 @@ public class PlayerResourceController : MonoBehaviour
         }
     }
 
+    // --- ОНОВЛЕНА ЛОГІКА НІТРО ---
     private void HandleBoost()
     {
-        // Перевіряємо натискання Shift, наявність бусту та наявність палива
-        if (Input.GetKey(KeyCode.LeftShift) && currentBoost > 0 && currentFuel > 0)
+        // --- ЗЧИТУЄМО ІНПУТИ ТА СТАН ---
+        bool isBoostPressed = Input.GetKey(KeyCode.LeftShift);
+        float verticalInput = Input.GetAxis("Vertical");
+
+        // carVelocity.z - це локальна швидкість ВПЕРЕД (додатня) / НАЗАД (від'ємна)
+        float currentForwardSpeed = arcadeVehicleController.carVelocity.z;
+
+        // --- УМОВИ ДЛЯ АКТИВАЦІЇ НІТРО ---
+        bool hasResources = currentBoost > 0 && currentFuel > 0;
+
+        // Умова 1: Гравець повинен ТИСНУТИ "ВПЕРЕД" (W)
+        bool isActivelyAccelerating = verticalInput > 0.1f;
+
+        // Умова 2: Машина не повинна рухатись назад
+        // (дозволяємо буст з 0, але не якщо є рух назад < 0)
+        bool isNotReversing = currentForwardSpeed >= 0f;
+
+        // Перевіряємо всі умови разом
+        if (isBoostPressed && hasResources && isActivelyAccelerating && isNotReversing)
         {
             isBoosting = true;
             currentBoost -= boostConsumptionRate * Time.deltaTime;
@@ -113,10 +131,12 @@ public class PlayerResourceController : MonoBehaviour
         }
         else if (isBoosting)
         {
-            // Якщо клавіша відпущена, або скінчився буст/паливо
+            // Якщо клавіша відпущена, АБО скінчились ресурси,
+            // АБО відпущений газ, АБО машина поїхала назад
             StopBoosting();
         }
     }
+    // --- КІНЕЦЬ ОНОВЛЕНОЇ ЛОГІКИ ---
 
     private void StopBoosting()
     {
@@ -150,4 +170,3 @@ public class PlayerResourceController : MonoBehaviour
         OnBoostAdded?.Invoke(); // Повідомляємо UI, що треба зробити "бамп"
     }
 }
-
